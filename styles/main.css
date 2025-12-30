@@ -251,3 +251,97 @@ canvas{
   .rules{ width: 100%; }
   .lobby__grid{ grid-template-columns: 1fr; }
 }
+
+/* ===============================
+   📱 Mobile Game Layout Override
+   =============================== */
+@media (max-width: 768px) {
+
+  body {
+    overflow: hidden;
+  }
+
+  .app {
+    padding: 0;
+    gap: 0;
+  }
+
+  /* 顶部栏：压缩成“游戏标题栏” */
+  .topbar {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 8px 12px;
+    border-radius: 0;
+  }
+
+  .brand {
+    justify-content: center;
+  }
+
+  .brand__icon {
+    display: none;
+  }
+
+  .brand__subtitle {
+    display: none;
+  }
+
+  .toolbar {
+    justify-content: center;
+    gap: 8px;
+    margin-top: 6px;
+  }
+
+  .toolbar__group {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* 内容区域：只允许一个主区域 */
+  .content {
+    flex-direction: column;
+    gap: 0;
+    flex: 1;
+  }
+
+  /* 大厅：单列卡片 */
+  .lobby {
+    border-radius: 0;
+    padding: 12px;
+  }
+
+  .lobby__grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* 游戏舞台：全屏 Canvas */
+  .stage {
+    flex: 1;
+    padding: 8px;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .hud {
+    font-size: 11px;
+  }
+
+  .canvasWrap {
+    flex: 1;
+    border-radius: 12px;
+  }
+
+  /* 规则面板：全屏抽屉 */
+  .rules {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    border-radius: 0;
+    z-index: 999;
+  }
+
+  /* 底部 footer 直接隐藏 */
+  .footer {
+    display: none;
+  }
+}
