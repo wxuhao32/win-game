@@ -1,20 +1,20 @@
 :root{
-  --bg: #0f1420;
-  --panel: rgba(255,255,255,0.06);
-  --panel2: rgba(255,255,255,0.10);
+  --bg0:#0b1020;
+  --bg1:#0f1420;
+  --panelA: rgba(255,255,255,0.10);
+  --panelB: rgba(255,255,255,0.06);
   --stroke: rgba(255,255,255,0.12);
   --text: rgba(255,255,255,0.92);
   --muted: rgba(255,255,255,0.62);
-  --accent: #6aa9ff;
-  --good: #4fe38a;
-  --bad: #ff5f6d;
-
   --shadow: 0 14px 50px rgba(0,0,0,0.45);
-  --radius: 18px;
-  --radius2: 22px;
+  --r1: 18px;
+  --r2: 22px;
+
+  --safeTop: env(safe-area-inset-top);
+  --safeBottom: env(safe-area-inset-bottom);
 }
 
-*{ box-sizing: border-box; }
+*{ box-sizing:border-box; }
 html,body{ height:100%; }
 body{
   margin:0;
@@ -24,58 +24,66 @@ body{
     radial-gradient(1200px 700px at 20% 10%, rgba(106,169,255,0.20), transparent 60%),
     radial-gradient(900px 600px at 90% 20%, rgba(79,227,138,0.14), transparent 55%),
     radial-gradient(900px 700px at 60% 95%, rgba(255,95,109,0.10), transparent 55%),
-    linear-gradient(180deg, #0b1020, #0f1420);
+    linear-gradient(180deg, var(--bg0), var(--bg1));
+  overflow: hidden;
 }
 
 .app{
-  height:100%;
+  height: 100dvh;            /* 手机地址栏变化更稳 */
+  height: 100vh;
   display:flex;
   flex-direction: column;
   padding: 14px;
   gap: 12px;
 }
 
-.topbar{
+.header{
   display:flex;
   align-items:center;
   justify-content: space-between;
+  gap: 12px;
   padding: 12px 14px;
-  background: linear-gradient(180deg, var(--panel2), var(--panel));
+  background: linear-gradient(180deg, var(--panelA), var(--panelB));
   border: 1px solid var(--stroke);
-  border-radius: var(--radius);
+  border-radius: var(--r1);
   box-shadow: var(--shadow);
   backdrop-filter: blur(10px);
 }
 
-.brand{ display:flex; align-items:center; gap:12px; min-width: 0; }
-.brand__icon{
+.brand{ display:flex; align-items:center; gap:12px; min-width:0; }
+.brand__logo{
   width: 44px; height: 44px; border-radius: 14px;
-  background:
-    linear-gradient(180deg, rgba(255,255,255,0.22), rgba(255,255,255,0.06));
+  background: linear-gradient(180deg, rgba(255,255,255,0.22), rgba(255,255,255,0.06));
   border: 1px solid rgba(255,255,255,0.16);
   position: relative;
   overflow:hidden;
 }
-.brand__icon::before{
+.brand__logo::before{
   content:"";
   position:absolute; inset:-20%;
-  background:
-    conic-gradient(from 210deg, rgba(106,169,255,0.5), rgba(79,227,138,0.45), rgba(255,95,109,0.35), rgba(106,169,255,0.5));
+  background: conic-gradient(from 210deg,
+    rgba(106,169,255,0.5),
+    rgba(79,227,138,0.45),
+    rgba(255,95,109,0.35),
+    rgba(106,169,255,0.5));
   filter: blur(10px);
   opacity: 0.65;
 }
 .brand__text{ min-width:0; }
-.brand__title{ font-weight: 750; letter-spacing: 0.2px; }
-.brand__subtitle{ color: var(--muted); font-size: 12px; margin-top: 2px; }
+.brand__title{ font-weight: 780; letter-spacing: .2px; }
+.brand__sub{ font-size:12px; color: var(--muted); margin-top: 2px; }
 
 .toolbar{
-  display:flex; align-items:center; gap: 10px;
+  display:flex;
+  align-items:center;
+  gap: 10px;
   flex-wrap: wrap;
   justify-content: flex-end;
 }
 
 .toolbar__group{ display:flex; align-items:center; gap:8px; }
-.label{ font-size: 12px; color: var(--muted); }
+.label{ font-size:12px; color: var(--muted); }
+
 .select{
   height: 34px;
   border-radius: 12px;
@@ -101,30 +109,34 @@ body{
 }
 .btn:hover{ filter: brightness(1.07); }
 .btn:active{ transform: translateY(1px) scale(0.99); }
-.btn:focus{ outline: none; border-color: rgba(106,169,255,0.55); }
+.btn:focus{ outline:none; border-color: rgba(106,169,255,0.55); }
 
 .btn--ghost{
   background: rgba(0,0,0,0.18);
   box-shadow: none;
 }
 
-.content{
-  flex: 1;
+.main{
+  flex:1;
+  min-height:0;
   display:flex;
   gap: 12px;
+  position: relative;
+}
+
+.panel{
+  background: linear-gradient(180deg, var(--panelA), var(--panelB));
+  border: 1px solid var(--stroke);
+  border-radius: var(--r2);
+  box-shadow: var(--shadow);
   min-height: 0;
 }
 
 .lobby{
   flex:1;
   padding: 14px;
-  background: linear-gradient(180deg, var(--panel2), var(--panel));
-  border: 1px solid var(--stroke);
-  border-radius: var(--radius2);
-  box-shadow: var(--shadow);
-  min-height: 0;
+  overflow:auto;
 }
-
 .lobby__grid{
   display:grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -135,8 +147,7 @@ body{
   padding: 14px;
   border-radius: 18px;
   border: 1px solid rgba(255,255,255,0.14);
-  background:
-    linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0.06));
+  background: linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0.06));
   cursor: pointer;
   transition: transform .12s ease, border-color .15s ease, filter .15s ease;
   position: relative;
@@ -148,7 +159,7 @@ body{
   filter: brightness(1.06);
 }
 .card:active{ transform: translateY(0px); }
-.card__title{ font-weight: 760; margin-bottom: 8px; }
+.card__title{ font-weight: 780; margin-bottom: 8px; }
 .card__desc{ color: var(--muted); font-size: 13px; line-height: 1.5; }
 .card__hint{ margin-top: 12px; font-size: 12px; color: rgba(255,255,255,0.55); }
 .card__badge{
@@ -163,11 +174,6 @@ body{
 .stage{
   flex:1;
   padding: 14px;
-  background: linear-gradient(180deg, var(--panel2), var(--panel));
-  border: 1px solid var(--stroke);
-  border-radius: var(--radius2);
-  box-shadow: var(--shadow);
-  min-height: 0;
   display:flex;
   flex-direction: column;
   gap: 12px;
@@ -175,57 +181,59 @@ body{
 
 .hud{
   display:flex;
-  gap: 10px;
-  align-items: center;
+  align-items:center;
   justify-content: space-between;
+  gap: 10px;
   font-size: 12px;
   color: var(--muted);
 }
-.hud__item{
+.hud__chip{
   padding: 6px 10px;
   border-radius: 999px;
   border: 1px solid rgba(255,255,255,0.12);
   background: rgba(0,0,0,0.18);
 }
-.hud__item--right{ text-align:right; }
+.hud__chip--right{ text-align:right; }
 
 .canvasWrap{
   flex:1;
-  min-height: 0;
+  min-height:0;
   border-radius: 18px;
   border: 1px solid rgba(255,255,255,0.12);
   background: rgba(0,0,0,0.22);
   overflow:hidden;
-  position: relative;
 }
 
 canvas{
   width:100%;
   height:100%;
   display:block;
-  touch-action: none; /* 关键：允许我们自己处理拖拽/长按 */
+  touch-action: none; /* 触控拖拽/长按交给我们 */
 }
 
 .rules{
-  width: 320px;
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 100%;
+  width: min(360px, 92vw);
   padding: 14px;
+  border-radius: var(--r2);
   background: linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0.06));
   border: 1px solid var(--stroke);
-  border-radius: var(--radius2);
   box-shadow: var(--shadow);
   backdrop-filter: blur(10px);
-  min-height: 0;
   display:flex;
   flex-direction: column;
+  z-index: 50;
 }
-
 .rules__head{
   display:flex;
   align-items:center;
   justify-content: space-between;
   margin-bottom: 8px;
 }
-.rules__title{ font-weight: 760; }
+.rules__title{ font-weight: 780; }
 .rules__body{
   overflow:auto;
   color: rgba(255,255,255,0.82);
@@ -246,123 +254,110 @@ canvas{
   font-size: 12px;
 }
 
-@media (max-width: 980px){
-  .content{ flex-direction: column; }
-  .rules{ width: 100%; }
-  .lobby__grid{ grid-template-columns: 1fr; }
+/* 内置浏览器提示遮罩 */
+.inappHint{
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  background: rgba(0,0,0,0.55);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding: 18px;
 }
+.inappHint__card{
+  width: min(520px, 96vw);
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,0.14);
+  background: linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0.06));
+  box-shadow: var(--shadow);
+  padding: 16px;
+}
+.inappHint__title{ font-weight: 800; margin-bottom: 8px; }
+.inappHint__desc{ color: rgba(255,255,255,0.75); font-size: 13px; line-height: 1.6; margin-bottom: 12px; }
 
-/* ===============================
-   📱 Mobile Game Layout Override
-   =============================== */
-@media (max-width: 768px) {
-
-  /* ===== 基础重置 ===== */
-  body {
-    overflow: hidden;
-  }
-
-  .app {
+/* =========================
+   📱 Mobile: 真正手游布局
+   - 顶部变短
+   - 工具栏固定到底部
+   - Canvas 占满
+   ========================= */
+@media (max-width: 900px){
+  .app{
     padding: 0;
     gap: 0;
+    height: 100dvh;
   }
 
-  /* ===== 顶部栏压缩 ===== */
-  .topbar {
+  .header{
+    border-radius: 0;
+    padding: calc(10px + var(--safeTop)) 12px 8px 12px;
     flex-direction: column;
     align-items: stretch;
-    padding: 8px 12px;
-    border-radius: 0;
-  }
-
-  .brand {
-    justify-content: center;
-  }
-
-  .brand__icon {
-    display: none;
-  }
-
-  .brand__subtitle {
-    display: none;
-  }
-
-  /* ===== 顶部按钮区（会被移到底部） ===== */
-  .toolbar {
-    justify-content: center;
     gap: 8px;
-    margin-top: 6px;
   }
 
-  .toolbar__group {
-    width: 100%;
+  .brand{
     justify-content: center;
   }
+  .brand__logo{ display:none; }
+  .brand__sub{ display:none; }
 
-  /* ===== 主内容区 ===== */
-  .content {
+  .main{
     flex-direction: column;
     gap: 0;
-    flex: 1;
   }
 
-  /* ===== 游戏舞台全屏化 ===== */
-  .stage {
-    flex: 1;
-    padding: 8px;
+  .panel{
     border-radius: 0;
     box-shadow: none;
-    padding-bottom: 72px; /* 给底部按钮留空间 */
+    border-left: none;
+    border-right: none;
   }
 
-  .hud {
-    font-size: 11px;
+  .lobby{
+    padding: 12px;
+  }
+  .lobby__grid{
+    grid-template-columns: 1fr;
   }
 
-  .canvasWrap {
-    flex: 1;
-    border-radius: 12px;
-    overflow: hidden;
+  .stage{
+    padding: 10px 10px calc(74px + var(--safeBottom)) 10px; /* 给底部栏让位 */
   }
 
-  /* ===== 🎯 第二刀：Canvas 比例修正 ===== */
-  canvas {
-    width: 100%;
-    height: 100%;
-    aspect-ratio: 9 / 16;
-    max-width: 100%;
-    max-height: 100%;
-    margin: 0 auto;
-    display: block;
+  .canvasWrap{
+    border-radius: 14px;
   }
 
-  /* ===== 🎯 第三刀：按钮固定到底部 ===== */
-  .toolbar {
+  /* 工具栏固定底部 */
+  .toolbar{
     position: fixed;
+    left: 0; right: 0;
     bottom: 0;
-    left: 0;
-    right: 0;
-
-    padding: 10px;
-    background: rgba(15, 20, 32, 0.92);
+    padding: 10px 10px calc(10px + var(--safeBottom)) 10px;
+    background: rgba(15,20,32,0.92);
     backdrop-filter: blur(10px);
     border-top: 1px solid rgba(255,255,255,0.12);
-
-    z-index: 100;
+    z-index: 120;
+    justify-content: center;
   }
 
-  /* ===== 规则面板：全屏抽屉 ===== */
-  .rules {
+  .toolbar__group{
+    width: 100%;
+    justify-content: center;
+  }
+
+  .footer{ display:none; }
+
+  /* 规则面板：全屏抽屉 */
+  .rules{
     position: fixed;
     inset: 0;
     width: 100%;
+    height: 100%;
     border-radius: 0;
-    z-index: 999;
-  }
-
-  /* ===== footer 直接隐藏 ===== */
-  .footer {
-    display: none;
   }
 }
+
 
