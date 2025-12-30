@@ -40,6 +40,40 @@
 })();
 </script>
   
+<script>
+(function () {
+  const ua = navigator.userAgent.toLowerCase();
+  const isWeChat = ua.includes('micromessenger');
+  const isQQ = ua.includes('qq/');
+  if (isWeChat || isQQ) {
+    document.addEventListener('DOMContentLoaded', () => {
+      document.body.innerHTML = `
+        <div style="
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          height:100vh;
+          text-align:center;
+          font-family:sans-serif;
+          background:#0f1420;
+          color:white;
+          padding:24px;
+        ">
+          <div>
+            <h2>请在浏览器中打开</h2>
+            <p style="opacity:.8">
+              点击右上角「…」<br/>
+              选择「在浏览器中打开」<br/><br/>
+              然后就可以正常玩啦 🎮
+            </p>
+          </div>
+        </div>
+      `;
+    });
+  }
+})();
+</script>
+  
 <body>
   <div class="app">
     <header class="topbar">
@@ -138,5 +172,6 @@
   <script type="module" src="./src/main.js"></script>
 </body>
 </html>
+
 
 
