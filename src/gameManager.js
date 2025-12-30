@@ -7,33 +7,19 @@ export class GameManager{
     this.ui = ui;
 
     this.registry = new Map();
-    this.current = null;     // current game instance
-    this.currentMeta = null; // game meta
-    this.running = false;
+    this.current = null;
+    this.currentMeta = null;
 
+    this.running = false;
     this.w = 0; this.h = 0; this.dpr = 1;
     this.lastT = 0;
-
-    // Pointer capture state
-    this.pointer = {
-      id: null,
-      x: 0, y: 0,
-      down: false,
-      type: "mouse",
-      button: 0
-    };
 
     this._bindEvents();
   }
 
-  register(gameMeta){
-    this.registry.set(gameMeta.id, gameMeta);
-  }
-
+  register(meta){ this.registry.set(meta.id, meta); }
   listGames(){
-    return Array.from(this.registry.values()).map(g=>({
-      id: g.id, name: g.name, description: g.description
-    }));
+    return Array.from(this.registry.values()).map(g=>({ id:g.id, name:g.name, description:g.description }));
   }
 
   start(gameId, options={}){
@@ -43,13 +29,15 @@ export class GameManager{
     this.stop();
 
     this.currentMeta = meta;
-    this.current = meta.create({ canvas: this.canvas, ctx: this.ctx, ui: this.ui, utils });
+    this.current = meta.create({ canvas:this.canvas, ctx:this.ctx, ui:this.ui, utils });
+
     this.ui.showGame(meta);
     this.ui.setRulesHtml(this.current.getRulesHtml?.() ?? "");
     this.ui.toggleRules(false);
 
-    // Minesweeper needs difficulty UI
+    // UI toggles
     this.ui.setDifficultyVisible(gameId === "minesweeper");
+    this.ui.setFlagModeVisible(gameId === "minesweeper");
 
     this.resize();
     this.current.start?.(options);
@@ -81,22 +69,17 @@ export class GameManager{
     this.h = fit.h;
     this.dpr = fit.dpr;
 
-    this.ctx.setTransform(this.dpr,0,0,this.dpr,0,0); // 统一用 CSS 像素坐标绘制
+    this.ctx.setTransform(this.dpr,0,0,this.dpr,0,0);
     this.current?.resize?.(this.w, this.h, this.dpr);
   }
 
-  // --- RAF loop ---
   _tick = (t)=>{
     if(!this.running) return;
 
-    const now = t;
-    const dt = Math.min(0.033, Math.max(0.0, (now - this.lastT)/1000));
-    this.lastT = now;
+    const dt = Math.min(0.033, Math.max(0, (t - this.lastT)/1000));
+    this.lastT = t;
 
-    // clear
     this.ctx.clearRect(0,0,this.w,this.h);
-
-    // update & render
     this.current?.update?.(dt);
     this.current?.render?.();
 
@@ -105,62 +88,14 @@ export class GameManager{
 
   _toCanvasXY(ev){
     const rect = this.canvas.getBoundingClientRect();
-    const x = (ev.clientX - rect.left);
-    const y = (ev.clientY - rect.top);
-    return { x, y };
-  }
-
-  _bindEvents(){
-    // Resize
-    const ro = new ResizeObserver(()=>this.resize());
-    ro.observe(this.canvas);
-
-    // Prevent default context menu on canvas
-    this.canvas.addEventListener("contextmenu", (e)=>{
-      e.preventDefault();
-      this.current?.contextMenu?.(this._normalizePointerEvent(e));
-    });
-
-    // Pointer events
-    this.canvas.addEventListener("pointerdown", (e)=>{
-      this.canvas.setPointerCapture(e.pointerId);
-      const pe = this._normalizePointerEvent(e);
-      this.pointer.id = e.pointerId;
-      this.pointer.down = true;
-      this.pointer.type = pe.pointerType;
-      this.pointer.button = pe.button;
-      this.current?.pointerDown?.(pe);
-    });
-
-    this.canvas.addEventListener("pointermove", (e)=>{
-      const pe = this._normalizePointerEvent(e);
-      this.current?.pointerMove?.(pe);
-    });
-
-    this.canvas.addEventListener("pointerup", (e)=>{
-      const pe = this._normalizePointerEvent(e);
-      this.pointer.down = false;
-      this.current?.pointerUp?.(pe);
-    });
-
-    this.canvas.addEventListener("pointercancel", (e)=>{
-      const pe = this._normalizePointerEvent(e);
-      this.pointer.down = false;
-      this.current?.pointerUp?.(pe);
-    });
-
-    // Keyboard (Solitaire 可拓展快捷键)
-    window.addEventListener("keydown", (e)=>{
-      this.current?.keyDown?.(e);
-    });
+    return { x: ev.clientX - rect.left, y: ev.clientY - rect.top };
   }
 
   _normalizePointerEvent(e){
     const {x,y} = this._toCanvasXY(e);
     return {
       x, y,
-      clientX: e.clientX,
-      clientY: e.clientY,
+      clientX: e.clientX, clientY: e.clientY,
       pointerId: e.pointerId,
       pointerType: e.pointerType || "mouse",
       button: e.button ?? 0,
@@ -169,4 +104,41 @@ export class GameManager{
       original: e
     };
   }
+
+  _bindEvents(){
+    // resize observers
+    const ro = new ResizeObserver(()=>this.resize());
+    ro.observe(this.canvas);
+
+    // 手机地址栏/旋转更稳
+    window.addEventListener("orientationchange", ()=>setTimeout(()=>this.resize(), 250));
+    window.addEventListener("resize", ()=>this.resize());
+
+    this.canvas.addEventListener("contextmenu", (e)=>{
+      e.preventDefault();
+      this.current?.contextMenu?.(this._normalizePointerEvent(e));
+    });
+
+    this.canvas.addEventListener("pointerdown", (e)=>{
+      this.canvas.setPointerCapture(e.pointerId);
+      this.current?.pointerDown?.(this._normalizePointerEvent(e));
+    });
+
+    this.canvas.addEventListener("pointermove", (e)=>{
+      this.current?.pointerMove?.(this._normalizePointerEvent(e));
+    });
+
+    this.canvas.addEventListener("pointerup", (e)=>{
+      this.current?.pointerUp?.(this._normalizePointerEvent(e));
+    });
+
+    this.canvas.addEventListener("pointercancel", (e)=>{
+      this.current?.pointerUp?.(this._normalizePointerEvent(e));
+    });
+
+    window.addEventListener("keydown", (e)=>{
+      this.current?.keyDown?.(e);
+    });
+  }
 }
+
