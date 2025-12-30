@@ -1,91 +1,24 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="zh-CN" translate="no">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="google" content="notranslate">
   <title>Windows 经典小游戏合集</title>
   <link rel="stylesheet" href="./styles/main.css" />
 </head>
-<script>
-(function () {
-  const ua = navigator.userAgent.toLowerCase();
-  const isWeChat = ua.includes('micromessenger');
-  const isQQ = ua.includes('qq/');
-  if (isWeChat || isQQ) {
-    document.addEventListener('DOMContentLoaded', () => {
-      document.body.innerHTML = `
-        <div style="
-          display:flex;
-          align-items:center;
-          justify-content:center;
-          height:100vh;
-          text-align:center;
-          font-family:sans-serif;
-          background:#0f1420;
-          color:white;
-          padding:24px;
-        ">
-          <div>
-            <h2>请在浏览器中打开</h2>
-            <p style="opacity:.8">
-              点击右上角「…」<br/>
-              选择「在浏览器中打开」<br/><br/>
-              然后就可以正常玩啦 🎮
-            </p>
-          </div>
-        </div>
-      `;
-    });
-  }
-})();
-</script>
-  
-<script>
-(function () {
-  const ua = navigator.userAgent.toLowerCase();
-  const isWeChat = ua.includes('micromessenger');
-  const isQQ = ua.includes('qq/');
-  if (isWeChat || isQQ) {
-    document.addEventListener('DOMContentLoaded', () => {
-      document.body.innerHTML = `
-        <div style="
-          display:flex;
-          align-items:center;
-          justify-content:center;
-          height:100vh;
-          text-align:center;
-          font-family:sans-serif;
-          background:#0f1420;
-          color:white;
-          padding:24px;
-        ">
-          <div>
-            <h2>请在浏览器中打开</h2>
-            <p style="opacity:.8">
-              点击右上角「…」<br/>
-              选择「在浏览器中打开」<br/><br/>
-              然后就可以正常玩啦 🎮
-            </p>
-          </div>
-        </div>
-      `;
-    });
-  }
-})();
-</script>
-  
 <body>
-  <div class="app">
-    <header class="topbar">
+  <div class="app" id="appRoot">
+    <header class="header">
       <div class="brand">
-        <div class="brand__icon" aria-hidden="true"></div>
+        <div class="brand__logo" aria-hidden="true"></div>
         <div class="brand__text">
           <div class="brand__title" id="uiTitle">Windows 小游戏合集</div>
-          <div class="brand__subtitle" id="uiSubtitle">Canvas 复刻 · 扫雷 & 纸牌</div>
+          <div class="brand__sub" id="uiSubtitle">Canvas 复刻 · 扫雷 & 纸牌</div>
         </div>
       </div>
 
-      <div class="toolbar">
+      <div class="toolbar" id="toolbar">
         <div class="toolbar__group" id="difficultyGroup" hidden>
           <label class="label" for="difficultySelect">难度</label>
           <select id="difficultySelect" class="select">
@@ -95,56 +28,24 @@
           </select>
         </div>
 
+        <button class="btn" id="btnFlagMode" type="button" hidden>🚩 插旗模式：关</button>
         <button class="btn" id="btnRules" type="button">玩法规则</button>
         <button class="btn" id="btnRestart" type="button">重新开始</button>
         <button class="btn btn--ghost" id="btnBack" type="button">返回大厅</button>
       </div>
     </header>
-    <script>
-(function () {
-  const ua = navigator.userAgent.toLowerCase();
-  const isWeChat = ua.includes('micromessenger');
-  const isQQ = ua.includes('qq/');
-  if (isWeChat || isQQ) {
-    document.addEventListener('DOMContentLoaded', () => {
-      document.body.innerHTML = `
-        <div style="
-          display:flex;
-          align-items:center;
-          justify-content:center;
-          height:100vh;
-          text-align:center;
-          font-family:sans-serif;
-          background:#0f1420;
-          color:white;
-          padding:24px;
-        ">
-          <div>
-            <h2>请在浏览器中打开</h2>
-            <p style="opacity:.8">
-              点击右上角「…」<br/>
-              选择「在浏览器中打开」<br/><br/>
-              然后就可以正常玩啦 🎮
-            </p>
-          </div>
-        </div>
-      `;
-    });
-  }
-})();
-</script>
 
-    <main class="content">
-      <!-- 大厅 -->
-      <section class="lobby" id="lobby">
+    <main class="main">
+      <!-- Lobby -->
+      <section class="panel lobby" id="lobby">
         <div class="lobby__grid" id="lobbyGrid"></div>
       </section>
 
-      <!-- 游戏舞台 -->
-      <section class="stage" id="stage" hidden>
+      <!-- Stage -->
+      <section class="panel stage" id="stage" hidden>
         <div class="hud">
-          <div class="hud__item" id="hudLeft">—</div>
-          <div class="hud__item hud__item--right" id="hudRight">—</div>
+          <div class="hud__chip" id="hudLeft">—</div>
+          <div class="hud__chip hud__chip--right" id="hudRight">—</div>
         </div>
 
         <div class="canvasWrap">
@@ -152,7 +53,7 @@
         </div>
       </section>
 
-      <!-- 规则面板 -->
+      <!-- Rules drawer -->
       <aside class="rules" id="rulesPanel" hidden>
         <div class="rules__head">
           <div class="rules__title">玩法规则</div>
@@ -160,18 +61,30 @@
         </div>
         <div class="rules__body" id="rulesBody"></div>
       </aside>
+
+      <!-- In-app browser hint (WeChat/QQ) -->
+      <div class="inappHint" id="inappHint" hidden>
+        <div class="inappHint__card">
+          <div class="inappHint__title">请在系统浏览器打开</div>
+          <div class="inappHint__desc">
+            如果你是在微信/QQ内置浏览器里打开，可能会被拦截或显示异常。<br/>
+            点击右上角「…」→ 选择「在浏览器中打开」即可正常游玩。
+          </div>
+          <button class="btn" id="btnCloseHint" type="button">我知道了</button>
+        </div>
+      </div>
     </main>
 
     <footer class="footer">
-      <span class="footer__hint">
-        桌面：左键/右键 · 移动：点击/长按/拖拽 · Canvas 自适应
-      </span>
+      <span>桌面：鼠标操作｜手机：触控拖拽/长按/按钮｜Canvas 自适应</span>
     </footer>
   </div>
 
   <script type="module" src="./src/main.js"></script>
 </body>
 </html>
+
+
 
 
 
