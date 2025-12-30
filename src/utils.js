@@ -41,14 +41,23 @@ export const utils = {
     this.roundRect(ctx,x,y,w,h,r);
     ctx.fillStyle = "rgba(255,255,255,0.08)";
     ctx.fill();
+
     this.roundRect(ctx,x+1,y+1,w-2,h-2,Math.max(0,r-1));
     ctx.strokeStyle = "rgba(255,255,255,0.12)";
     ctx.lineWidth = 2;
     ctx.stroke();
+
     this.roundRect(ctx,x,y,w,h,r);
     ctx.strokeStyle = "rgba(0,0,0,0.35)";
     ctx.lineWidth = 2;
     ctx.stroke();
+  },
+
+  // ✅ 兼容旧版本：旧代码调用 utils.bevelFill()
+  bevelFill(ctx, x, y, w, h, r){
+    return this.bevelPanel(ctx, x, y, w, h, r);
   }
 };
+
+
 
