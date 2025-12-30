@@ -342,7 +342,8 @@ export const Solitaire = {
       ctx.fillStyle="rgba(0,0,0,0.18)";
       ctx.fillRect(0,0,w,h);
 
-      utils.bevelPanel(ctx, 12,12, w-24, h-24, 20);
+      utils.bevelPanel(ctx, 12,12, w-24, h-24, 20
+);
 
       drawSlot(stock.x, stock.y);
       drawSlot(waste.x, waste.y);
@@ -526,5 +527,6 @@ export const Solitaire = {
     };
   }
 };
+
 
 
