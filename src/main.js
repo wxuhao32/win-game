@@ -9,40 +9,39 @@ const gm = new GameManager(ui.el.canvas, ui);
 gm.register(Minesweeper);
 gm.register(Solitaire);
 
+ui.maybeShowInAppHint();
+
 function showLobby(){
   gm.stop();
   ui.showLobby(gm.listGames());
 }
 
+function currentId(){
+  return (location.hash || "#lobby").replace("#","");
+}
+
 function route(){
-  const hash = (location.hash || "#lobby").replace("#","");
-  if(hash === "lobby"){
+  const id = currentId();
+  if(id === "lobby"){
     showLobby();
     return;
   }
-  if(gm.registry.has(hash)){
-    // start selected game
+  if(gm.registry.has(id)){
     const options = {};
-    if(hash === "minesweeper"){
+    if(id === "minesweeper"){
       options.level = ui.el.difficultySelect.value || "easy";
     }
-    gm.start(hash, options);
+    gm.start(id, options);
     return;
   }
-  // fallback
   location.hash = "#lobby";
 }
 
-ui.onSelectGame((id)=>{
-  location.hash = `#${id}`;
-});
-
-ui.onBack(()=>{
-  location.hash = "#lobby";
-});
+ui.onSelectGame((id)=>{ location.hash = `#${id}`; });
+ui.onBack(()=>{ location.hash = "#lobby"; });
 
 ui.onRestart(()=>{
-  const id = (location.hash || "#lobby").replace("#","");
+  const id = currentId();
   if(id === "minesweeper"){
     gm.restart({ level: ui.el.difficultySelect.value });
   }else{
@@ -51,11 +50,19 @@ ui.onRestart(()=>{
 });
 
 ui.onDifficulty((level)=>{
-  const id = (location.hash || "#lobby").replace("#","");
-  if(id === "minesweeper"){
+  if(currentId() === "minesweeper"){
     gm.restart({ level });
+  }
+});
+
+ui.onToggleFlagMode(()=>{
+  const g = gm.current;
+  if(g?.toggleFlagMode){
+    const on = g.toggleFlagMode();
+    ui.setFlagMode(on);
   }
 });
 
 window.addEventListener("hashchange", route);
 route();
+
